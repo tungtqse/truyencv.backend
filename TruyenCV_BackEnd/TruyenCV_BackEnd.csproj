@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="internallogs\**" />
+    <Content Remove="internallogs\**" />
+    <EmbeddedResource Remove="internallogs\**" />
+    <None Remove="internallogs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="nlog.config" />
   </ItemGroup>
 

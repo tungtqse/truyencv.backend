@@ -28,5 +28,21 @@ namespace TruyenCV_BackEnd.Common
             public const string TrackChange = "TrackChange";
             public const string TransactionId = "TransactionId";
         }
+
+        public class ProgressStatus
+        {
+            public const string Completed = "Completed";
+            public const string Pending = "Pending";
+            public const string Dropped = "Dropped";
+            public const string Processing = "Processing";
+        }
+
+        public class Source
+        {
+            public const string WikiDich = "WikiDich";
+            public const string TruyenCV = "TruyenCV";
+            public const string TruyenYY = "TruyenYY";
+            public const string TangThuVien = "TangThuVien";
+        }
     }
 }
