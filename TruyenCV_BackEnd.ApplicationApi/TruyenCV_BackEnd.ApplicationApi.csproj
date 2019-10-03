@@ -4,4 +4,17 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="EntityFramework.DbContextScope" Version="1.0.0" />
+    <PackageReference Include="FluentValidation" Version="8.3.0" />
+    <PackageReference Include="MediatR" Version="7.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TruyenCV_BackEnd.Common\TruyenCV_BackEnd.Common.csproj" />
+    <ProjectReference Include="..\TruyenCV_BackEnd.DataAccess\TruyenCV_BackEnd.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>
