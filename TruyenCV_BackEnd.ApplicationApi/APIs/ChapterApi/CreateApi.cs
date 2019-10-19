@@ -13,14 +13,15 @@ using TruyenCV_BackEnd.Common.Models;
 using TruyenCV_BackEnd.DataAccess;
 using TruyenCV_BackEnd.DataAccess.Models;
 
-namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
+namespace TruyenCV_BackEnd.ApplicationApi.APIs.ChapterApi
 {
     public class CreateApi
     {
         public class Command : IRequest<CommandResponse>
         {
-            public Guid AuthorId { get; set; }
-            public string Name { get; set; }
+            public Guid StoryId { get; set; }
+            public string Title { get; set; }
+            public string Content { get; set; }
             public string Link { get; set; }
         }
 
@@ -40,12 +41,14 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
         {
             public CommandValidator()
             {
-                RuleFor(f => f.AuthorId).NotEmpty().NotEqual(Guid.Empty)
-                    .WithMessage("Author is null or empty");
-                RuleFor(f => f.Name).NotNull().NotEmpty()
-                    .WithMessage("Name is null or empty");
+                RuleFor(f => f.StoryId).NotEmpty().NotEqual(Guid.Empty)
+                    .WithMessage("Story is null or empty");
+                RuleFor(f => f.Title).NotNull().NotEmpty()
+                    .WithMessage("Title is null or empty");
+                RuleFor(f => f.Content).NotNull().NotEmpty()
+                    .WithMessage("Content is null or empty");
                 RuleFor(f => f.Link).NotNull().NotEmpty()
-                    .WithMessage("Link is null or empty");              
+                    .WithMessage("Link is null or empty");
             }
         }
 
@@ -54,35 +57,10 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
         {
             public MappingProfile()
             {
-                CreateMap<Command, Story>()
+                CreateMap<Command, Chapter>()
                     .ForMember(m => m.Id, o => o.MapFrom(f => Guid.NewGuid()))
-                    .ForMember(m => m.TotalChapter, o => o.MapFrom(f => 0))
-                    .ForMember(m => m.ProgressStatus, o => o.MapFrom(f => Constants.ProgressStatus.Processing))
-                    .ForMember(m => m.Source, o => o.MapFrom(f => MappingStorySource(f.Link)))
                     ;
-            }
-
-            private string MappingStorySource(string link)
-            {
-                if (link.Contains(Constants.Source.TruyenCV.ToLower()))
-                {
-                    return Constants.Source.TruyenCV;
-                }
-                else if (link.Contains(Constants.Source.TruyenYY.ToLower()))
-                {
-                    return Constants.Source.TruyenYY;
-                }
-                else if (link.Contains(Constants.Source.TangThuVien.ToLower()))
-                {
-                    return Constants.Source.TangThuVien;
-                }
-                else if (link.Contains(Constants.Source.WikiDich.ToLower()))
-                {
-                    return Constants.Source.WikiDich;
-                }
-
-                return string.Empty;
-            }
+            }        
         }
 
         #region CommandHandler
@@ -110,17 +88,25 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                 {
                     var context = scope.DbContexts.Get<MainContext>();
 
-                    isValid = context.Set<Story>().Any(f => f.Name.Equals(message.Name, StringComparison.OrdinalIgnoreCase));
+                    isValid = context.Set<Chapter>().Any(f => f.Title.Equals(message.Title, StringComparison.OrdinalIgnoreCase));
 
                     if (!isValid)
-                    {
-                        var story = Mapper.Map<Story>(message);
-                        context.Set<Story>().Add(story);
+                    {  
+                        var maxChapter = context.Set<Chapter>().Max(f => f.NumberChapter).Value;                      
+
+                        var chapter = Mapper.Map<Chapter>(message);
+                        chapter.NumberChapter = maxChapter + 1;
+
+                        context.Set<Chapter>().Add(chapter);
+
+                        var story = context.Set<Story>().FirstOrDefault(f => f.Id == message.StoryId);
+                        story.TotalChapter = chapter.NumberChapter.Value;
+                        
                         isValid = true;
                     }
                     else
                     {
-                        result.Messages.Add("Story name was existed");
+                        result.Messages.Add("Chapter title was existed");
                     }
 
                     scope.SaveChanges();

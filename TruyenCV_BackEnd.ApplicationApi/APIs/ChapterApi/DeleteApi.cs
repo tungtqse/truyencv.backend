@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EntityFramework.DbContextScope.Interfaces;
+﻿using EntityFramework.DbContextScope.Interfaces;
 using FluentValidation;
 using MediatR;
 using System;
@@ -12,14 +11,13 @@ using TruyenCV_BackEnd.Common.Models;
 using TruyenCV_BackEnd.DataAccess;
 using TruyenCV_BackEnd.DataAccess.Models;
 
-namespace TruyenCV_BackEnd.ApplicationApi.APIs.AuthorApi
+namespace TruyenCV_BackEnd.ApplicationApi.APIs.ChapterApi
 {
-    public class CreateApi
+    public class DeleteApi
     {
         public class Command : IRequest<CommandResponse>
         {
-            public string Name { get; set; }
-            public string Link { get; set; }
+            public Guid Id { get; set; }
         }
 
         public class CommandResponse : IWebApiResponse
@@ -38,21 +36,9 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.AuthorApi
         {
             public CommandValidator()
             {
-                RuleFor(f => f.Name).NotNull().NotEmpty()
-                    .WithMessage("Name is null or empty");
-                RuleFor(f => f.Link).NotNull().NotEmpty()
-                    .WithMessage("Link is null or empty");
-            }
-        }
+                RuleFor(f => f.Id).NotEmpty().NotEqual(Guid.Empty)
+                    .WithMessage("Id is null or empty");
 
-        // Mapping
-        public class MappingProfile : Profile
-        {
-            public MappingProfile()
-            {
-                CreateMap<Command, Author>()
-                    .ForMember(m => m.Id, o => o.MapFrom(f => Guid.NewGuid()))
-                    ;
             }
         }
 
@@ -81,17 +67,17 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.AuthorApi
                 {
                     var context = scope.DbContexts.Get<MainContext>();
 
-                    isValid = context.Set<Author>().Any(f => f.Name.Equals(message.Name, StringComparison.OrdinalIgnoreCase));
+                    var chapter = context.Set<Chapter>().FirstOrDefault(f => f.Id == message.Id);
 
-                    if (!isValid)
+                    if (chapter != null)
                     {
-                        var author = Mapper.Map<Author>(message);
-                        context.Set<Author>().Add(author);
+                        chapter.StatusId = false;
+
                         isValid = true;
                     }
                     else
                     {
-                        result.Messages.Add("Author name was existed");
+                        result.Messages.Add("Not found Chapter");
                     }
 
                     scope.SaveChanges();

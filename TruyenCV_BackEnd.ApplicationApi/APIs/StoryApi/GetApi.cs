@@ -45,8 +45,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                 public string Link { get; set; }
                 public string Source { get; set; }
                 public string Author { get; set; }
-
-                public ICollection<Chapter> Chapters { get; set; }
+                public Guid AuthorId { get; set; }
             }
             
             public class StoryModel
@@ -58,21 +57,8 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                 public string Link { get; set; }
                 public string Source { get; set; }
                 public string Author { get; set; }
-
-                public List<ChapterModel> Chapters { get; set; }
-
-                public StoryModel()
-                {
-                    Chapters = new List<ChapterModel>();
-                }
-            }
-
-            public class ChapterModel
-            {
-                public Guid Id { get; set; }
-                public string Title { get; set; }
-                public DateTime ModifiedDate { get; set; }
-            }            
+                public Guid AuthorId { get; set; }
+            }        
         }
 
         public class MappingProfile : Profile
@@ -83,11 +69,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                     //.ForMember(m => m.Id, o => o.MapFrom(f => f.Id))
                     //.ForMember(m => m.Name, o => o.MapFrom(f => f.Name))
                     //.ForMember(m => m.Link, o => o.MapFrom(f => f.Link))
-                    ;
-
-                CreateMap<Chapter, NestedModel.ChapterModel>()
-                    .ForMember(m => m.ModifiedDate, o => o.MapFrom(f => f.ModifiedDate))
-                    ;
+                    ;                
             }
         }
 
@@ -118,10 +100,10 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                                     Name = story.Name,
                                     Link = story.Link,
                                     Author = story.Author.Name,
+                                    AuthorId = story.AuthorId, 
                                     ProgressStatus = story.ProgressStatus,
                                     Source = story.Source,
-                                    TotalChapter = story.TotalChapter,
-                                    Chapters = story.Chapters.OrderByDescending(o=>o.NumberChapter).ToList()
+                                    TotalChapter = story.TotalChapter
                                 }).ProjectTo<NestedModel.StoryModel>().FirstOrDefault();
 
 

@@ -87,7 +87,8 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.AuthorApi
                     var result = new Result()
                     {
                         Count = count,
-                        Data = items
+                        Data = items,
+                        IsSuccessful = true
                     };
 
                     return Task.FromResult(result);

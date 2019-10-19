@@ -18,7 +18,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
     {
         public class Query : PagingModel, IRequest<Result>
         {
-            public string Name { get; set; }
+            public string Keyword { get; set; }
         }
 
         public class Result : ISearchResult<NestedModel.StoryModel>, IWebApiResponse
@@ -50,6 +50,8 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                 public int TotalChapter { get; set; }
                 public string Author { get; set; }
                 public DateTime ModifiedDate { get; set; }
+                public string ModifiedDateDisplay { get; set; }
+                public string ProgressStatus { get; set; }
             }
         }
 
@@ -64,6 +66,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                     .ForMember(m => m.Name, o => o.MapFrom(f => f.Story.Name))
                     .ForMember(m => m.ModifiedDate, o => o.MapFrom(f => f.Story.ModifiedDate))
                     .ForMember(m => m.Author, o => o.MapFrom(f => f.Author.Name))
+                    .ForMember(m => m.ProgressStatus, o => o.MapFrom(f => f.Story.ProgressStatus))
                     ;
             }
         }
@@ -88,9 +91,9 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                     var query = context.Set<Story>()
                             .Where(w => w.StatusId == true);
 
-                    if (!string.IsNullOrEmpty(message.Name))
+                    if (!string.IsNullOrEmpty(message.Keyword))
                     {
-                        query = query.Where(f => f.Name.Contains(message.Name));
+                        query = query.Where(f => f.Name.Contains(message.Keyword));
                     }
 
                     var count = query.Count();
@@ -98,18 +101,69 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                     {
                         Author = s.Author,
                         Story = s
-                    }).OrderBy(o => o.Story.Name).Skip(message.Skip).Take(message.Take).ProjectTo<NestedModel.StoryModel>().ToList();
+                    }).OrderByDescending(o => o.Story.ModifiedDate).Skip(message.Skip).Take(message.Take).ProjectTo<NestedModel.StoryModel>().ToList();
+
+                    if(items != null && items.Count > 0)
+                    {
+                        foreach(var item in items)
+                        {
+                            item.ModifiedDateDisplay = GetModifiedDateDisplay(item.ModifiedDate);
+                        }
+                    }
+
 
                     var result = new Result()
                     {
                         Count = count,
-                        Data = items
+                        Data = items,
+                        IsSuccessful = true
                     };
 
                     return Task.FromResult(result);
                 }
             }
+
+            private string GetModifiedDateDisplay(DateTime? modifiedDate)
+            {
+                if (modifiedDate.HasValue)
+                {
+                    var now = DateTime.Now;
+
+                    TimeSpan span = now.Subtract(modifiedDate.Value);
+
+                    if (span.Days > 0)
+                    {
+                        if(span.Days > 365)
+                        {
+                            return $"{span.Days / 365} year(s) ago";
+                        }
+                        else if(span.Days > 30)
+                        {
+                            return $"{span.Days / 30} month(s) ago";
+                        }                        
+
+                        return $"{span.Days} day(s) ago";
+                    }
+                    else
+                    {
+                        if (span.Hours > 0)
+                        {
+                            return $"{span.Hours} hour(s) ago";
+                        }
+                        else if (span.Minutes > 0)
+                        {
+                            return $"{span.Minutes} minute(s) ago";
+                        }
+
+                        return $"{span.Seconds} second(s) ago";
+                    }
+                }
+
+                return "1 second(s) ago";
+            }
         }
+
+        
 
         #endregion
 
