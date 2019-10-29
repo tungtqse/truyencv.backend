@@ -43,6 +43,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.ChapterApi
                 public Chapter Chapter { get; set; }
                 public Story Story { get; set; }
                 public Author Author { get; set; }
+                public Bookmark Bookmark { get; set; }
             }
 
             public class ChapterModel
@@ -58,6 +59,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.ChapterApi
                 public DateTime ModifiedDate { get; set; }
                 public int NextNumberChapter { get; set; }
                 public int PreNumberChapter { get; set; }
+                public bool IsBookmark { get; set; }
             }       
         }
 
@@ -77,6 +79,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.ChapterApi
                     .ForMember(m => m.Author, o => o.MapFrom(f => f.Author.Name))
                     .ForMember(m => m.NextNumberChapter, o => o.MapFrom(f => GetNextNumberChapter(f.Chapter.NumberChapter.Value, f.Story.TotalChapter)))
                     .ForMember(m => m.PreNumberChapter, o => o.MapFrom(f => GetPreNumberChapter(f.Chapter.NumberChapter.Value)))
+                    .ForMember(m => m.IsBookmark, o => o.MapFrom(f => (f.Bookmark != null && f.Bookmark.ChapterId == f.Chapter.Id && f.Bookmark.StatusId)))
                     ;
             }
 
@@ -125,14 +128,17 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.ChapterApi
                     if (message.StoryId.HasValue)
                     {
                         queryChapter = queryChapter.Where(f => f.StoryId == message.StoryId.Value);
-                    }
+                    }                   
 
                     var item = ( from chapter in queryChapter
+                                 join bookmark in context.Set<Bookmark>() on chapter.Id equals bookmark.ChapterId into bmJoin
+                                 from bookmark in bmJoin.DefaultIfEmpty()                               
                                 select new NestedModel.QueryModel()
                                 {
                                     Chapter = chapter,
                                     Story = chapter.Story,
-                                    Author = chapter.Story.Author
+                                    Author = chapter.Story.Author,
+                                    Bookmark = bookmark
                                 }).ProjectTo<NestedModel.ChapterModel>().FirstOrDefault();
 
 

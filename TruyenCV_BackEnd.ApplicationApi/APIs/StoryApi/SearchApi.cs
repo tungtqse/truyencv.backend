@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TruyenCV_BackEnd.Common.Models;
 using TruyenCV_BackEnd.DataAccess;
 using TruyenCV_BackEnd.DataAccess.Models;
+using TruyenCV_BackEnd.Utility;
 
 namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
 {
@@ -49,6 +50,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                 public string Name { get; set; }
                 public int TotalChapter { get; set; }
                 public string Author { get; set; }
+                public Guid AuthorId { get; set; }
                 public DateTime ModifiedDate { get; set; }
                 public string ModifiedDateDisplay { get; set; }
                 public string ProgressStatus { get; set; }
@@ -67,6 +69,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                     .ForMember(m => m.ModifiedDate, o => o.MapFrom(f => f.Story.ModifiedDate))
                     .ForMember(m => m.Author, o => o.MapFrom(f => f.Author.Name))
                     .ForMember(m => m.ProgressStatus, o => o.MapFrom(f => f.Story.ProgressStatus))
+                    .ForMember(m => m.AuthorId, o => o.MapFrom(f => f.Story.AuthorId))
                     ;
             }
         }
@@ -107,7 +110,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                     {
                         foreach(var item in items)
                         {
-                            item.ModifiedDateDisplay = GetModifiedDateDisplay(item.ModifiedDate);
+                            item.ModifiedDateDisplay = Helper.GetModifiedDateDisplay(item.ModifiedDate);
                         }
                     }
 
@@ -121,45 +124,6 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
 
                     return Task.FromResult(result);
                 }
-            }
-
-            private string GetModifiedDateDisplay(DateTime? modifiedDate)
-            {
-                if (modifiedDate.HasValue)
-                {
-                    var now = DateTime.Now;
-
-                    TimeSpan span = now.Subtract(modifiedDate.Value);
-
-                    if (span.Days > 0)
-                    {
-                        if(span.Days > 365)
-                        {
-                            return $"{span.Days / 365} year(s) ago";
-                        }
-                        else if(span.Days > 30)
-                        {
-                            return $"{span.Days / 30} month(s) ago";
-                        }                        
-
-                        return $"{span.Days} day(s) ago";
-                    }
-                    else
-                    {
-                        if (span.Hours > 0)
-                        {
-                            return $"{span.Hours} hour(s) ago";
-                        }
-                        else if (span.Minutes > 0)
-                        {
-                            return $"{span.Minutes} minute(s) ago";
-                        }
-
-                        return $"{span.Seconds} second(s) ago";
-                    }
-                }
-
-                return "1 second(s) ago";
             }
         }
 

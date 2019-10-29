@@ -13,6 +13,7 @@ namespace TruyenCV_BackEnd.DataAccess.Models
         public Guid? AttachmentFileId { get; set; }
         public string Link { get; set; }
         public string Source { get; set; }
+        public string Description { get; set; }
         public virtual Author Author { get; set; }
         public virtual ICollection<Chapter> Chapters { get; set; }
         public virtual ICollection<Category> Categories { get; set; }

@@ -57,5 +57,13 @@ namespace TruyenCV_BackEnd.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SetBookmark(ApplicationApi.APIs.ChapterApi.CreateBookmarkApi.Command command)
+        {
+            var result = await _mediator.Send(command);
+
+            return Ok(result);
+        }
     }
 }

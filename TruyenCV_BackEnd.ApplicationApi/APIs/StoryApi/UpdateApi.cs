@@ -24,6 +24,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
             public string ProgressStatus { get; set; }
             public string Link { get; set; }
             public string Source { get; set; }
+            public string Description { get; set; }
         }
 
         public class CommandResponse : IWebApiResponse

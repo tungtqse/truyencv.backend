@@ -46,6 +46,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                 public string Source { get; set; }
                 public string Author { get; set; }
                 public Guid AuthorId { get; set; }
+                public string Description { get; set; }
             }
             
             public class StoryModel
@@ -58,6 +59,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                 public string Source { get; set; }
                 public string Author { get; set; }
                 public Guid AuthorId { get; set; }
+                public string Description { get; set; }
             }        
         }
 
@@ -66,7 +68,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
             public MappingProfile()
             {
                 CreateMap<NestedModel.QueryModel, NestedModel.StoryModel>()
-                    //.ForMember(m => m.Id, o => o.MapFrom(f => f.Id))
+                    .ForMember(m => m.Description, o => o.MapFrom(f => (!string.IsNullOrEmpty(f.Description) ? f.Description: "")))
                     //.ForMember(m => m.Name, o => o.MapFrom(f => f.Name))
                     //.ForMember(m => m.Link, o => o.MapFrom(f => f.Link))
                     ;                
@@ -103,7 +105,8 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
                                     AuthorId = story.AuthorId, 
                                     ProgressStatus = story.ProgressStatus,
                                     Source = story.Source,
-                                    TotalChapter = story.TotalChapter
+                                    TotalChapter = story.TotalChapter,
+                                    Description = story.Description
                                 }).ProjectTo<NestedModel.StoryModel>().FirstOrDefault();
 
 

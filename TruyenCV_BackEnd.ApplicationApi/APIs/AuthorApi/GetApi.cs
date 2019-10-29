@@ -11,6 +11,7 @@ using TruyenCV_BackEnd.Common.Models;
 using TruyenCV_BackEnd.DataAccess;
 using TruyenCV_BackEnd.DataAccess.Models;
 using System.Linq;
+using TruyenCV_BackEnd.Utility;
 
 namespace TruyenCV_BackEnd.ApplicationApi.APIs.AuthorApi
 {
@@ -67,6 +68,8 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.AuthorApi
                 public int TotalChapter { get; set; }
                 public string Link { get; set; }
                 public string Source { get; set; }
+                public DateTime ModifiedDate { get; set; }
+                public string ModifiedDateDisplay { get; set; }
             }
         }
 
@@ -81,6 +84,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.AuthorApi
                     ;             
 
                 CreateMap<Story, NestedModel.StoryModel>()
+                    .ForMember(m => m.ModifiedDateDisplay, o => o.MapFrom(f => Helper.GetModifiedDateDisplay(f.ModifiedDate)))
                     ;
             }            
         }
@@ -115,6 +119,8 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.AuthorApi
 
                     if (item != null)
                     {
+
+
                         result.IsSuccessful = true;
                         result.Data = item;
                     }

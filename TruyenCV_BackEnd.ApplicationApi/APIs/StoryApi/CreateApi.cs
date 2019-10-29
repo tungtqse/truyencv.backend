@@ -22,6 +22,7 @@ namespace TruyenCV_BackEnd.ApplicationApi.APIs.StoryApi
             public Guid AuthorId { get; set; }
             public string Name { get; set; }
             public string Link { get; set; }
+            public string Description { get; set; }
         }
 
         public class CommandResponse : IWebApiResponse
