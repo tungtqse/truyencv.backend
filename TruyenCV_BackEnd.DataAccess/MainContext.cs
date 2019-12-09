@@ -29,6 +29,8 @@ namespace TruyenCV_BackEnd.DataAccess
         public virtual DbSet<Author> Authors { get; set; }
         public virtual DbSet<Chapter> Chapters { get; set; }
         public virtual DbSet<Bookmark> Bookmarks { get; set; }
+        public virtual DbSet<Subscription> Subscriptions { get; set; }
+        public virtual DbSet<Reading> Readings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

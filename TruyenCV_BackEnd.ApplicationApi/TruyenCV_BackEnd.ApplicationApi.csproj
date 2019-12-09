@@ -17,8 +17,4 @@
     <ProjectReference Include="..\TruyenCV_BackEnd.DataAccess\TruyenCV_BackEnd.DataAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="APIs\SubscribeApi\" />
-  </ItemGroup>
-
 </Project>
