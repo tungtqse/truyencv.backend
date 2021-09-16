@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TruyenCV_BackEnd.Controllers
 {
+
+    [Microsoft.AspNetCore.Cors.EnableCors("AllowOrigin")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class StoryController : ControllerBase

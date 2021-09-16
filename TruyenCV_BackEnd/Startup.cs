@@ -76,9 +76,17 @@ namespace TruyenCV_BackEnd
             services.ConfigureLoggerService();
 
             // Enable Cors
+
             services.AddCors(c =>
             {
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                //c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                c.AddPolicy("CorsPolicy", options => options.AllowAnyOrigin()
+                                                            .AllowAnyMethod()
+                                                            .AllowAnyHeader());
+                c.AddPolicy("AllowOrigin", options =>
+                {
+                    options.WithOrigins("http://localhost:4218/", "http://localhost:3000/");
+                });
             });
         }
 
@@ -92,14 +100,14 @@ namespace TruyenCV_BackEnd
             else
             {
                 app.UseHsts();
-            }
+            }           
 
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .AllowCredentials());
+                .AllowCredentials());            
 
             Utility.AppContext.Configure(app.ApplicationServices
                       .GetRequiredService<IHttpContextAccessor>());
